@@ -1,0 +1,22 @@
+{
+	"name": "iin-rtsp-stream",
+	"version": "2.0.1",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"prepublish": "npm run test",
+		"test": "mocha test/*.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/raphaelkoester/node-rtsp-stream"
+	},
+	"author": "Alterations made by Raphael Koester, original author: David Jsa <david@jsa.me>",
+	"license": "MIT",
+	"devDependencies": {
+		"mocha": "^5.2.0"
+	},
+	"dependencies": {
+		"ws": "^7.0.0"
+	}
+}
