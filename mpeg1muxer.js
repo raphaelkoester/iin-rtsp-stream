@@ -1,72 +1,66 @@
+let Mpeg1Muxer;
+
 const child_process = require('child_process');
+
+const util = require('util');
+
 const events = require('events');
 
-class Mpeg1Muxer extends events.EventEmitter
+Mpeg1Muxer = function (options)
 {
-  constructor(options)
+  var key;
+  this.url = options.url;
+  this.ffmpegOptions = options.ffmpegOptions;
+  this.exitCode = undefined;
+  this.additionalFlags = [];
+  if (this.ffmpegOptions)
   {
-    super();
-    const { url, ffmpegOptions, ffmpegPath } = options;
-    this.url = url;
-    this.ffmpegOptions = ffmpegOptions;
-    this.exitCode = undefined;
-    this.additionalFlags = [];
-
-    if (ffmpegOptions)
+    for (key in this.ffmpegOptions)
     {
-      for (const key in ffmpegOptions)
+      this.additionalFlags.push(key);
+      if (String(this.ffmpegOptions[key]) !== '')
       {
-        if (ffmpegOptions.hasOwnProperty(key))
-        {
-          this.additionalFlags.push(key);
-          if (ffmpegOptions[key] !== undefined && ffmpegOptions[key] !== null)
-          {
-            this.additionalFlags.push(`${ffmpegOptions[key]}`);
-          }
-        }
+        this.additionalFlags.push(String(this.ffmpegOptions[key]));
       }
     }
-
-    this.spawnOptions = [
-      '-rtsp_transport',
-      'tcp',
-      '-i',
-      this.url,
-      '-f',
-      'mpegts',
-      '-codec:v',
-      'mpeg1video',
-      // additional ffmpeg options go here
-      ...this.additionalFlags,
-      '-'
-    ];
-
-    this.stream = child_process.spawn(ffmpegPath, this.spawnOptions, {
-      detached: false
-    });
-
-    this.inputStreamStarted = true;
-
-    this.stream.stdout.on('data', data =>
-    {
-      this.emit('mpeg1data', data);
-    });
-
-    this.stream.stderr.on('data', data =>
-    {
-      this.emit('ffmpegStderr', data);
-    });
-
-    this.stream.on('exit', (code, signal) =>
-    {
-      if (code === 1)
-      {
-        console.error('RTSP stream exited with error');
-        this.exitCode = 1;
-        this.emit('exitWithError');
-      }
-    });
   }
-}
+  this.spawnOptions = [
+    "-rtsp_transport",
+    "tcp",
+    "-i",
+    this.url,
+    '-f',
+    'mpegts',
+    '-codec:v',
+    'mpeg1video',
+    // additional ffmpeg options go here
+    ...this.additionalFlags,
+    '-'
+  ];
+  this.stream = child_process.spawn(options.ffmpegPath, this.spawnOptions, {
+    detached: false
+  });
+  this.inputStreamStarted = true;
+  this.stream.stdout.on('data', (data) =>
+  {
+    return this.emit('mpeg1data', data);
+  });
+  this.stream.stderr.on('data', (data) =>
+  {
+    return this.emit('ffmpegStderr', data);
+  });
+  this.stream.on('exit', (code, signal) =>
+  {
+    if (code === 1)
+    {
+      console.error('RTSP stream exited with error');
+      this.exitCode = 1;
+      return this.emit('exitWithError');
+    }
+  });
+  return this;
+};
+
+util.inherits(Mpeg1Muxer, events.EventEmitter);
 
 module.exports = Mpeg1Muxer;
