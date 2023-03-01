@@ -3,8 +3,6 @@ const util = require('util');
 const events = require('events');
 const Mpeg1Muxer = require('./mpeg1muxer');
 
-const STREAM_MAGIC_BYTES = "jsmp"; // Must be 4 bytes
-
 VideoStream = function (options)
 {
   this.options = options;
@@ -74,7 +72,7 @@ VideoStream.prototype.startMpeg1Stream = function ()
     }
     if (gettingInputData)
     {
-      inputData.push(data.toString());
+      inputData.push(data);
       size = data.match(/\d+x\d+/);
       if (size != null)
       {
@@ -138,13 +136,13 @@ VideoStream.prototype.pipeStreamToSocketServer = function ()
 VideoStream.prototype.onSocketConnect = function (socket, request)
 {
   // Your existing code here
-  console.log(`${this.name}: New WebSocket Connection (` + this.wsServer.clients.size + " total)");
+  console.log(`${this.name}: New WebSocket Connection (${this.wsServer.clients.size} total)`);
   socket.remoteAddress = request.connection.remoteAddress;
 
   // Add this block of code
   socket.on("close", (code, message) =>
   {
-    console.log(`${this.name}: Disconnected WebSocket (` + this.wsServer.clients.size + " total)");
+    console.log(`${this.name}: Disconnected WebSocket (${this.wsServer.clients.size} total), code: ${code}, message: ${message}`);
     if (this.wsServer.clients.size === 0)
     {
       this.stop();
