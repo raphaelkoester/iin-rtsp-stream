@@ -1,5 +1,5 @@
 # RTSP Stream to WebSocket Server Library
-This Node.js library allows you to easily stream RTSP video to a WebSocket server. It supports MPEG1 video with MPEGTS and is highly optimized and customizable.
+This Node.js library allows you to easily stream RTSP video to a HLS server.
 This library is an altered version of node-rtsp-stream with performance improvements and a some new features implemented into it.
 
 ## Installation
