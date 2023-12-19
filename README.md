@@ -1,4 +1,4 @@
-# RTSP Stream to WebSocket Server Library
+# RTSP Stream to HLS Server Library
 This Node.js library allows you to easily stream RTSP video to a HLS server.
 This library is an altered version of node-rtsp-stream with performance improvements and a some new features implemented into it.
 
